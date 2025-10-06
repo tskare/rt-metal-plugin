@@ -1,3 +1,15 @@
+# Project notes and ideas, human-readable, likely to fall out of date so not included.
+research/
+
+# AI Agent configs; I've been experimenting with these recently and my agent files need work;
+# they're basically /init'ed. Will add them once they're improved a bit.
+AGENTS.md
+CLAUDE.md
+
+
+#### The below is largely Pamplejuce's .gitignore ####
+# Pamplejuce .gitignore follows
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -24,6 +36,7 @@ Testing
 .idea
 
 # clion cmake builds
+build/
 cmake-build-debug
 cmake-build-release
 cmake-build-relwithdebinfo

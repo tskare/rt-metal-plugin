@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 3.25)
+
+project(TSMetalAccel VERSION 0.1.0 LANGUAGES C CXX
+    DESCRIPTION "JUCE module for GPU-accelerated audio processing with Metal"
+    HOMEPAGE_URL "https://github.com/travisskare/rt-metal-plugin")
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED YES)
+
+if (NOT COMMAND juce_add_module)
+    message(FATAL_ERROR "JUCE must be added to your project before ts-metal-accel!")
+endif ()
+
+# Add the module - creates target "ts_metal_accel" from directory name
+juce_add_module("${CMAKE_CURRENT_LIST_DIR}")
+
+# Note: juce_add_module creates an INTERFACE library, but the target
+# may not be available for configuration in the same CMakeLists.txt.
+# The include path for metal-cpp is handled via the module header's searchpaths.

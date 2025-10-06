@@ -13,11 +13,10 @@ include(PamplejuceMacOS)
 # Couple tweaks that IMO should be JUCE defaults
 include(JUCEDefaults)
 
-# Change me!
 # This is the internal name of the project and the name of JUCE's shared code target
 # Note: This cannot have spaces (it may be 2024, but you can't have it all!)
 # Worry not, JUCE's PRODUCT_NAME can have spaces (and is what DAWs display)
-set(PROJECT_NAME "Pamplejuce")
+set(PROJECT_NAME "MetalAudioPlugin")
 
 # Worry not, JUCE's PRODUCT_NAME can have spaces (and is what DAWs will display)
 # You can also just have it be the same thing as PROJECT_NAME
@@ -25,17 +24,18 @@ set(PROJECT_NAME "Pamplejuce")
 #   set(PROJECT_NAME "MyPlugin_v${MAJOR_VERSION}")
 # Doing so enables major versions to show up in IDEs and DAWs as separate plugins
 # allowing you to change parameters and behavior without breaking existing user projects
-set(PRODUCT_NAME "Pamplejuce Demo")
+set(PRODUCT_NAME "Metal-Audio Demo")
 
-# Change me! Used for the MacOS bundle name and Installers
-set(COMPANY_NAME "Pamplejuce Company")
+# Used for the MacOS bundle name and Installers
+set(COMPANY_NAME "tskare")
 
-# Change me! Used for the MacOS bundle identifier (and signing)
-set(BUNDLE_ID "com.pamplejuce.pamplejuce")
+# Used for the MacOS bundle identifier (and signing)
+set(BUNDLE_ID "com.travisskare.metalaudioplugin")
 
-# Change me! Set the plugin formats you want built
+# Set the plugin formats you want built
 # Valid choices: AAX Unity VST VST3 AU AUv3 Standalone
-set(FORMATS Standalone AU VST3 AUv3)
+# During development, we're building MacOS/AU and Standalone.
+set(FORMATS Standalone AU VST3)
 
 # Force JUCE to work with sccache
 # instruct MSVC to embed debug info (/Z7) instead of emitting a .pdb
@@ -60,27 +60,35 @@ add_subdirectory(modules/clap-juce-extensions EXCLUDE_FROM_ALL)
 # This adds the melatonin inspector module
 add_subdirectory (modules/melatonin_inspector)
 
+# Add the ts_metal_accel module for GPU acceleration
+juce_add_module(modules/ts_metal_accel)
+
+# Add metal-cpp include path to the module target after it's created
+target_include_directories(ts_metal_accel
+    INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/modules/ts_metal_accel/third_party/metal-cpp)
+
+# Add FDTD helper module (builds on ts_metal_accel)
+juce_add_module(modules/ts_metal_accel_fdtd)
+
 # See `docs/CMake API.md` in the JUCE repo for all config options
 juce_add_plugin("${PROJECT_NAME}"
     # Icons for the standalone app
     ICON_BIG "${CMAKE_CURRENT_SOURCE_DIR}/packaging/icon.png"
 
-    # Change me!
     COMPANY_NAME "${COMPANY_NAME}"
     BUNDLE_ID "${BUNDLE_ID}"
 
     # On MacOS, plugin is copied to /Users/yourname/Library/Audio/Plug-Ins/
     COPY_PLUGIN_AFTER_BUILD TRUE
 
-    # Change me!
-    # A four-character plugin id
+    # Four-char manufacturer ID
     # First character MUST be uppercase for AU formats
-    PLUGIN_MANUFACTURER_CODE Pamp
+    PLUGIN_MANUFACTURER_CODE TSts
 
-    # Change me!
     # A unique four-character plugin id
     # Note: this must have at least one upper-case character
-    PLUGIN_CODE P001
+    PLUGIN_CODE Ex04
     FORMATS "${FORMATS}"
 
     # The name of your final executable
@@ -132,7 +140,7 @@ target_compile_definitions(SharedCode
     VERSION="${CURRENT_VERSION}"
 
     # JucePlugin_Name is for some reason doesn't use the nicer PRODUCT_NAME
-    PRODUCT_NAME_WITHOUT_VERSION="Pamplejuce"
+    PRODUCT_NAME_WITHOUT_VERSION="Metal-Audio Demo"
 )
 
 # Link to any other modules you added (with juce_add_module) here!
@@ -144,6 +152,8 @@ target_link_libraries(SharedCode
     INTERFACE
     Assets
     melatonin_inspector
+    ts_metal_accel
+    ts_metal_accel_fdtd
     juce_audio_utils
     juce_audio_processors
     juce_dsp
