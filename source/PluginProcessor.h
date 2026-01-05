@@ -3,7 +3,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_events/juce_events.h>
 #include <ts_metal_accel/ts_metal_accel.h>
-#include <ts_metal_accel_fdtd/ts_metal_accel_fdtd.h>
+#include <ts_metal_accel_waveguide/ts_metal_accel_waveguide.h>
 
 #include <atomic>
 #include <expected>
@@ -51,12 +51,11 @@ class PluginProcessor : public juce::AudioProcessor,
   bool isAsyncActive() const;
   juce::String getProcessingStatus() const;
   ts::metal::MetalAccelerator::GPUStats getGPUStats() const;
-  void setFDTDEnabled(bool enabled);
-  bool isFDTDEnabled() const;
-  juce::String getFDTDStatus() const;
-  void setFDTDGPUPreferred(bool useGPU);
-  bool isFDTDGPUPreferred() const;
-  ts::metal::fdtd::FDTDReverbEngine::AsyncMetrics getFDTDAsyncMetrics() const;
+
+  void setWaveguideEnabled(bool enabled);
+  bool isWaveguideEnabled() const;
+  juce::String getWaveguideStatus() const;
+  int getWaveguideCount() const;
 
   juce::AudioProcessorValueTreeState& getValueTree() { return parameters; }
 
@@ -80,7 +79,6 @@ class PluginProcessor : public juce::AudioProcessor,
   void requestAsyncTeardown();
   void parameterChanged(const juce::String& parameterID,
                         float newValue) override;
-  void configureFDTD(double sampleRate);
 
   juce::AudioProcessorValueTreeState parameters;
 
@@ -100,12 +98,10 @@ class PluginProcessor : public juce::AudioProcessor,
   juce::String statusText{"Phase 1 (synchronous)"};
   mutable juce::SpinLock statusLock;
 
-  std::atomic<bool> fdtdEnabled{false};
-  ts::metal::fdtd::FDTDReverbEngine fdtdEngine;
-  juce::String fdtdStatus{"FDTD disabled"};
-  mutable juce::SpinLock fdtdStatusLock;
-  std::atomic<bool> fdtdConfigDirty{false};
-  std::atomic<bool> fdtdGPUPreferred{true};
+  std::atomic<bool> waveguideEnabled{true};
+  ts::metal::waveguide::WaveguideEngine waveguideEngine;
+  juce::String waveguideStatus{"Waveguide not initialized"};
+  mutable juce::SpinLock waveguideStatusLock;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginProcessor)
 };

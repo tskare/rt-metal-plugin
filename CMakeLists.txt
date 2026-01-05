@@ -68,8 +68,11 @@ target_include_directories(ts_metal_accel
     INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/modules/ts_metal_accel/third_party/metal-cpp)
 
-# Add FDTD helper module (builds on ts_metal_accel)
-juce_add_module(modules/ts_metal_accel_fdtd)
+# FDTD module moved to experimental/ - replaced with waveguide module
+# juce_add_module(modules/ts_metal_accel_fdtd)
+
+# Add waveguide engine module for GPU-accelerated waveguide synthesis
+juce_add_module(modules/ts_metal_accel_waveguide)
 
 # See `docs/CMake API.md` in the JUCE repo for all config options
 juce_add_plugin("${PROJECT_NAME}"
@@ -153,7 +156,7 @@ target_link_libraries(SharedCode
     Assets
     melatonin_inspector
     ts_metal_accel
-    ts_metal_accel_fdtd
+    ts_metal_accel_waveguide
     juce_audio_utils
     juce_audio_processors
     juce_dsp
